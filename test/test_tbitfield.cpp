@@ -167,7 +167,9 @@ TEST(TBitField, or_operator_applied_to_bitfields_of_equal_size)
   expBf.SetBit(2);
   expBf.SetBit(3);
 
-  EXPECT_EQ(expBf, bf1 | bf2);
+  TBitField bf3 = bf1 | bf2;
+  //cout << bf3;
+  EXPECT_EQ(expBf, bf3);
 }
 
 TEST(TBitField, or_operator_applied_to_bitfields_of_non_equal_size)
@@ -218,9 +220,11 @@ TEST(TBitField, and_operator_applied_to_bitfields_of_non_equal_size)
   bf2.SetBit(3);
 
   // expBf = 00010
+  expBf.SetBit(1);
+  expBf.SetBit(2);
   expBf.SetBit(3);
 
-  EXPECT_EQ(expBf, bf1 & bf2);
+  EXPECT_EQ(expBf, bf1 | bf2);
 }
 
 TEST(TBitField, can_invert_bitfield)
@@ -249,25 +253,6 @@ TEST(TBitField, can_invert_large_bitfield)
   expNegBf.ClrBit(35);
 
   EXPECT_EQ(expNegBf, negBf);
-}
-
-TEST(TBitField, invert_plus_and_operator_on_different_size_bitfield)
-{
-  const int firstSze = 4, secondSize = 8;
-  TBitField firstBf(firstSze), negFirstBf(firstSze), secondBf(secondSize), testBf(secondSize);
-  // firstBf = 0001
-  firstBf.SetBit(0);
-  negFirstBf = ~firstBf;
-  // negFirstBf = 1110
-
-  // secondBf = 00011000
-  secondBf.SetBit(3);
-  secondBf.SetBit(4);
-
-  // testBf = 00001000
-  testBf.SetBit(3);
-
-  EXPECT_EQ(secondBf & negFirstBf, testBf);
 }
 
 TEST(TBitField, can_invert_many_random_bits_bitfield)
@@ -308,4 +293,39 @@ TEST(TBitField, bitfields_with_different_bits_are_not_equal)
   bf2.SetBit(2);
 
   EXPECT_NE(bf1, bf2);
+}
+
+TEST(TBitField, intersect_with_negotiation)
+{
+	TBitField bf1(15);
+	TBitField bf2(100);
+	bf1.SetBit(1);
+	bf1.SetBit(5);
+	bf2.SetBit(1);
+	bf2.SetBit(90);
+	TBitField bf3 = (~bf2)&(bf1);
+	TBitField bf4(15);
+	bf4.SetBit(5);
+	EXPECT_EQ(bf4, bf3);
+}
+
+TEST(TBitField, negotiation)
+{
+	TBitField bf1(10);
+	TBitField bf2(100);
+	bf1.SetBit(1);
+	bf1.SetBit(5);
+
+	bf2.SetBit(1);
+	bf2.SetBit(2);
+	bf2.SetBit(90);
+
+	TBitField bf3 = ~(bf1 & bf2);
+
+	TBitField res(10);
+	for (int i = 2; i < 10; i++)
+		res.SetBit(i);
+	res.SetBit(0);
+	
+	EXPECT_EQ(res, bf3);
 }

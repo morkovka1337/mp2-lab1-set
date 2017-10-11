@@ -26,8 +26,9 @@ TBitField::TBitField(const TBitField &bf) // конструктор копиро
 {
 	MemLen = bf.MemLen;
 	BitLen = bf.BitLen;
-	if (MemLen == 0)
+	/*if (MemLen == 0)
 		throw "Zero length of BitLen";
+	*/
 	pMem = new TELEM[MemLen];
 	for (int i = 0; i < MemLen; i++)
 		pMem[i] = bf.pMem[i];
@@ -159,11 +160,7 @@ TBitField TBitField::operator&(const TBitField &bf) // операция "и"
 	int min = (BitLen > bf.BitLen) ? bf.BitLen : BitLen;
 	TBitField res(min);
 	for (int i = 0; i < res.MemLen; i++)
-		res.pMem[i] = pMem[i]&bf.pMem[i];
-	for (int i = (res.MemLen - 1)*BITS_IN_ONE_MEM; i < res.BitLen; i++)
-	{ 
-		int a = GetBit(i); int b = bf.GetBit(i); if (a + b == 2) res.SetBit(i);
-	}
+		res.pMem[i] = pMem[i] & bf.pMem[i];
 	return res;
 }
 
